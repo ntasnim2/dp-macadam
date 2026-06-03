@@ -19,6 +19,7 @@ class ExperimentConfig:
     adam_beta2: float = 0.999
 
     h1: float = 1e-9
+    h2: float = 1e-6
     beta3: float = 0.999
     gamma: float = 1e-8
 

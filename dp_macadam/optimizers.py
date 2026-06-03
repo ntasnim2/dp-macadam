@@ -52,12 +52,10 @@ def run_dpmacadam(seed, sigma, config, train_loader, test_loader, loss_fn, devic
             update = m_hat / (torch.sqrt(u_hat) + config.gamma)
             apply_flat_update(model, update, config.eta)
 
-            variance_estimate = (
-                (noisy_grad - m_hat_prev) ** 2
-                - b ** 2 * noise_scale ** 2
-            )
-            s2 = config.beta3 * s2 + (1 - config.beta3) * variance_estimate
-            s2_hat = torch.clamp(s2 / (1 - config.beta3 ** t), min=config.h1)
+            variance_estimate = (noisy_grad - m_hat_prev) ** 2
+            s2 = config.adam_beta1 * s2 + (1 - config.adam_beta1) * variance_estimate
+            kappa = 2 * (config.adam_beta1 - config.adam_beta1 ** t) / (1 + config.adam_beta1)
+            s2_hat = torch.clamp(s2 / kappa - b ** 2 * noise_scale ** 2, min=config.h1, max=config.h2)
             s = torch.sqrt(s2_hat)
             b = torch.sqrt(s) * torch.sqrt(s.sum())
 
